@@ -10,10 +10,10 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
     autoDeploy: true
-    disk:
-      name: neuronstack-data
-      mountPath: /app/data
-      sizeGB: 1
+    # Free tier no longer supports persistent disks. Data (SQLite DB + uploaded
+    # media) lives in /app/data which is EPHEMERAL — wiped on every restart or
+    # redeploy. Upgrade to plan: starter ($7/mo) and add a disk: block back to
+    # persist data.
     envVars:
       - key: NODE_ENV
         value: production
