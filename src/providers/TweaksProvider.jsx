@@ -4,9 +4,9 @@ import { useAuth } from './AuthProvider.jsx';
 
 const DEFAULTS = {
   accentColor: '#3b82f6',
-  theme: 'Midnight',
+  theme: 'Light',
   fontFamily: 'DM Sans',
-  sidebarStyle: 'Minimal',
+  sidebarStyle: 'Solid',
   cardStyle: 'Border',
   density: 'Comfortable',
 };
