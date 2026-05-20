@@ -149,7 +149,7 @@ function Navbar({ setMobileOpen }) {
   return (
     <div style={{
       height: 'var(--nav-h)', minHeight: 50, display: 'flex', alignItems: 'center', gap: 10,
-      padding: '0 20px', borderBottom: '1px solid var(--border)', background: 'rgba(6,6,12,0.65)',
+      padding: '0 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg-1)',
       backdropFilter: 'blur(12px)', flexShrink: 0, zIndex: 15,
     }}>
       <button className="mobile-menu-btn" onClick={() => setMobileOpen((o) => !o)} style={{ background: 'none', border: 'none', color: 'var(--text-1)', cursor: 'pointer', padding: 4, display: 'none' }}>

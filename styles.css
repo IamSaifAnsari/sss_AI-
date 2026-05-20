@@ -250,6 +250,8 @@ a { color: var(--accent); text-decoration: none; }
 /* ═══════ Light mode ═══════ */
 .theme-light {
   --bg-0:#f8f9fb; --bg-1:#ffffff; --bg-2:#f1f3f5; --bg-3:#e5e7eb; --bg-4:#d1d5db;
+  --border: rgba(0,0,0,0.08);
+  --border-light: rgba(0,0,0,0.14);
   --border:rgba(0,0,0,0.08); --border-light:rgba(0,0,0,0.14);
   --text-0:#111827; --text-1:#1f2937; --text-2:#6b7280; --text-3:#9ca3af;
 }

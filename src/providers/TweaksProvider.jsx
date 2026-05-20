@@ -60,13 +60,14 @@ export function TweaksProvider({ children }) {
     };
     if (fonts[tweaks.fontFamily]) r.style.setProperty('--font', fonts[tweaks.fontFamily]);
 
-    const root = document.getElementById('root');
-    if (root) {
-      root.className = '';
-      if (tweaks.theme === 'Charcoal') root.classList.add('theme-charcoal');
-      else if (tweaks.theme === 'Pitch') root.classList.add('theme-pitch');
-      else if (tweaks.theme === 'Light') root.classList.add('theme-light');
-    }
+    // Apply the theme class to <html> so CSS variables cascade to <body> + #root,
+    // not just to the #root subtree. Otherwise body { background: var(--bg-0) }
+    // keeps reading the dark default.
+    const html = document.documentElement;
+    html.classList.remove('theme-charcoal', 'theme-pitch', 'theme-light');
+    if (tweaks.theme === 'Charcoal') html.classList.add('theme-charcoal');
+    else if (tweaks.theme === 'Pitch') html.classList.add('theme-pitch');
+    else if (tweaks.theme === 'Light') html.classList.add('theme-light');
 
     const body = document.body;
     body.classList.remove('card-glass', 'card-solid', 'card-border', 'density-compact', 'density-default', 'density-comfortable');

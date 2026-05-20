@@ -54,9 +54,9 @@ export default function LoginPage() {
 
       <div style={{
         position: 'relative', width: 420, maxWidth: '92vw', zIndex: 1,
-        background: 'rgba(10,10,20,0.85)', backdropFilter: 'blur(24px)',
+        background: 'var(--bg-1)', backdropFilter: 'blur(24px)',
         border: '1px solid var(--border-light)', borderRadius: 16,
-        padding: '40px 36px', boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
+        padding: '40px 36px', boxShadow: '0 32px 80px rgba(0,0,0,0.25)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--accent)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
