@@ -1,4 +1,7 @@
-const BASE = '/api';
+// In dev, Vite proxies /api → :3001. In production, point to the deployed backend.
+// Set VITE_API_BASE_URL=https://<your-backend>.onrender.com at build time.
+const ROOT = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const BASE = `${ROOT}/api`;
 
 let activeWorkspaceId = null;
 export const setActiveWorkspaceForClient = (id) => { activeWorkspaceId = id || null; };

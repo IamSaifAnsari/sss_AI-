@@ -26,11 +26,20 @@ import oauthRoutes from './routes/oauth.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+// Comma-separated list of allowed origins, e.g.
+//   CLIENT_ORIGIN=http://localhost:5173,https://iamsaifansari.github.io
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173,http://localhost:5174';
+const ALLOWED_ORIGINS = CLIENT_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean);
 
 app.use(express.json({ limit: '32mb' }));
 app.use(cookieParser());
-app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error(`Origin ${origin} not allowed by CORS`));
+  },
+  credentials: true,
+}));
 
 // Serve generated images / videos / audio.
 app.use('/api/storage', express.static(getStorageRoot(), { maxAge: '7d', immutable: true }));

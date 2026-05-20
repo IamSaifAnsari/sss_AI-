@@ -117,6 +117,63 @@ SQLite + a single Node process is perfectly fine up to thousands of users, espec
 - **Single machine.** No horizontal scale. Cannot run two backend processes against the same SQLite file safely. If you outgrow this, Turso (libSQL) keeps the SQLite syntax but adds replication + multi-region.
 - **Backups.** Snapshot `data/neuronstack.db` regularly. `sqlite3 db .backup file.bak` is online-safe.
 
+## Deploying (free)
+
+The app splits cleanly:
+
+- **Frontend** → GitHub Pages (free, static)
+- **Backend** → Render.com Docker free tier (free, with limits: spins down after 15 min idle, ~50s cold start)
+
+### 1. Backend on Render
+
+1. Push this repo to GitHub (already done).
+2. Go to <https://dashboard.render.com> → **New + → Blueprint**.
+3. Select your repo. Render reads `render.yaml` and creates the service.
+4. Wait for first build (~5-10 min, builds `better-sqlite3` from source).
+5. In **Service → Environment** add the values marked `sync: false`:
+   - `DEMO_ADMIN_PASSWORD` — strong password (not `admin1234`)
+   - `DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_WORKSPACE` — optional
+   - OAuth secrets if you want Slack/GitHub/Stripe connect
+6. Copy the public URL Render gives you, e.g. `https://neuronstack-backend.onrender.com`.
+
+### 2. Frontend on GitHub Pages
+
+1. In the GitHub repo, **Settings → Secrets and variables → Actions → New repository secret**:
+   - Name: `VITE_API_BASE_URL`
+   - Value: your Render URL (e.g. `https://neuronstack-backend.onrender.com`)
+2. **Settings → Pages**: source = **GitHub Actions**.
+3. Push any commit to `main`. The `.github/workflows/pages.yml` workflow runs and deploys.
+4. Visit `https://<your-username>.github.io/sss_AI-/`.
+
+If your repo name differs from `sss_AI-`, edit `.github/workflows/pages.yml` and change `VITE_BASE_PATH`.
+
+### 3. Wire backend ↔ frontend
+
+In Render → Service → Environment, set:
+
+```
+CLIENT_ORIGIN=https://<your-username>.github.io
+```
+
+Restart the service. CORS now allows the Pages origin.
+
+### 4. OAuth redirects
+
+If you connect Slack/GitHub/Stripe, register their redirect URIs as:
+
+```
+https://neuronstack-backend.onrender.com/api/oauth/slack/callback
+https://neuronstack-backend.onrender.com/api/oauth/github/callback
+https://neuronstack-backend.onrender.com/api/oauth/stripe/callback
+```
+
+### Render free tier limits
+
+- Cold start ~50 s when idle. First request after sleep is slow.
+- 750 hours/mo runtime (one always-on service fits).
+- Persistent disk capped at 1 GB on free.
+- If you need always-warm, upgrade to Starter ($7/mo).
+
 ## Notes on the legacy demo
 
 The original Babel-standalone prototype is still on disk:

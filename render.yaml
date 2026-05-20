@@ -1,0 +1,50 @@
+# Render.com blueprint. Push this file to GitHub, then in the Render dashboard:
+#   New + → Blueprint → connect this repo → Apply.
+# After deploy, set the secret values (JWT_SECRET, ENCRYPTION_KEY, OAuth) in
+# Render → Service → Environment.
+services:
+  - type: web
+    name: neuronstack-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: neuronstack-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_PATH
+        value: /app/data/neuronstack.db
+      - key: STORAGE_PATH
+        value: /app/data/storage
+      - key: CLIENT_ORIGIN
+        # Update with your real Pages URL after first deploy.
+        value: https://iamsaifansari.github.io
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: DEMO_ADMIN_EMAIL
+        sync: false
+      - key: DEMO_ADMIN_PASSWORD
+        sync: false
+      - key: DEMO_ADMIN_WORKSPACE
+        sync: false
+      - key: SLACK_CLIENT_ID
+        sync: false
+      - key: SLACK_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: STRIPE_CONNECT_CLIENT_ID
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false

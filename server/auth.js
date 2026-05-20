@@ -6,10 +6,13 @@ const SECRET = process.env.JWT_SECRET || 'dev-only-insecure-secret';
 const COOKIE_NAME = 'ns_session';
 const SESSION_TTL_DAYS = 7;
 
+// In production, the frontend (GitHub Pages) and backend (Render) live on
+// different origins, so the session cookie must be SameSite=None + Secure.
+const IS_PROD = process.env.NODE_ENV === 'production';
 export const COOKIE_OPTIONS = {
   httpOnly: true,
-  sameSite: 'lax',
-  secure: process.env.NODE_ENV === 'production',
+  sameSite: IS_PROD ? 'none' : 'lax',
+  secure: IS_PROD,
   maxAge: SESSION_TTL_DAYS * 24 * 60 * 60 * 1000,
   path: '/',
 };
