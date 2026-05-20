@@ -1,6 +1,6 @@
 {
   "name": "neuronstack-ai",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "NeuronStack AI — Vite + React Router frontend with Node + Express + SQLite backend.",
@@ -10,7 +10,9 @@
     "dev:client": "vite",
     "server": "node server/index.js",
     "build": "vite build",
-    "preview": "vite preview --port 5173"
+    "preview": "vite preview --port 5173",
+    "lint": "eslint src server",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\" \"server/**/*.{js,json}\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,7 +21,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "otplib": "^12.0.1",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"
@@ -29,6 +35,12 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.0",
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "globals": "^15.13.0",
+    "prettier": "^3.4.1",
     "vite": "^5.4.10"
   }
 }

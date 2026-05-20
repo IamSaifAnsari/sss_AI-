@@ -246,6 +246,22 @@ CREATE TABLE IF NOT EXISTS oauth_connections (
   UNIQUE (workspace_id, provider, account_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_mfa (
+  user_id          TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  encrypted_secret TEXT NOT NULL,
+  recovery_codes   TEXT NOT NULL DEFAULT '[]',
+  enabled          INTEGER NOT NULL DEFAULT 0,
+  enrolled_at      TEXT
+);
+
+CREATE TABLE IF NOT EXISTS password_resets (
+  token        TEXT PRIMARY KEY,
+  user_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at   TEXT NOT NULL,
+  used_at      TEXT,
+  created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS oauth_states (
   state         TEXT PRIMARY KEY,
   workspace_id  TEXT NOT NULL,

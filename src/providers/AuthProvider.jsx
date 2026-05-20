@@ -25,10 +25,11 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { refreshMe(); }, []);
 
-  const signIn = async (email, password) => {
-    const { user: u } = await api.login(email, password);
-    setUser(u);
-    return u;
+  const signIn = async (email, password, mfaCode) => {
+    const r = await api.login(email, password, mfaCode);
+    if (r?.mfa_required) return { mfa_required: true, user_id: r.user_id };
+    setUser(r.user);
+    return r.user;
   };
 
   const signUp = async (email, password, workspaceName) => {

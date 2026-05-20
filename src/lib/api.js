@@ -3,10 +3,18 @@ import { apiClient, streamSSE } from './apiClient.js';
 export const api = {
   // ────── Auth ──────
   signup: (email, password, workspaceName) => apiClient.post('/auth/signup', { email, password, workspaceName }),
-  login: (email, password) => apiClient.post('/auth/login', { email, password }),
+  login: (email, password, mfa_code) => apiClient.post('/auth/login', { email, password, mfa_code }),
   logout: () => apiClient.post('/auth/logout', {}),
   me: () => apiClient.get('/auth/me'),
   changePassword: (currentPassword, newPassword) => apiClient.post('/auth/change-password', { currentPassword, newPassword }),
+  requestPasswordReset: (email) => apiClient.post('/password-reset/request', { email }),
+  completePasswordReset: (token, new_password) => apiClient.post('/password-reset/complete', { token, new_password }),
+
+  // ────── MFA ──────
+  mfaStatus: () => apiClient.get('/mfa/status'),
+  mfaEnrollStart: () => apiClient.post('/mfa/enroll/start', {}),
+  mfaEnrollVerify: (code) => apiClient.post('/mfa/enroll/verify', { code }),
+  mfaDisable: (password) => apiClient.post('/mfa/disable', { password }),
 
   // ────── Profile ──────
   getProfile: () => apiClient.get('/profile'),

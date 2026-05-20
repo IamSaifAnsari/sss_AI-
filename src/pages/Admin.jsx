@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
 import { useToast } from '../providers/ToastProvider.jsx';
+import { useWorkspace } from '../providers/WorkspaceProvider.jsx';
 import { Icons } from '../components/Icons.jsx';
 import { GlassPanel, MetricCard, SectionHeader, Tabs, AreaChart, DonutChart, EmptyState } from '../components/ui.jsx';
 
@@ -8,12 +9,23 @@ const PLAN_COLORS = { enterprise: 'var(--accent3)', pro: 'var(--accent)', free: 
 
 export default function AdminPage() {
   const toast = useToast();
+  const { active } = useWorkspace();
   const [tab, setTab] = useState('overview');
   const [overview, setOverview] = useState(null);
   const [users, setUsers] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [usage, setUsage] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [logFilter, setLogFilter] = useState('all');
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (tab !== 'audit' || !active?.id) return;
+    const load = () => api.listLogs(active.id, logFilter === 'all' ? null : logFilter).then(setLogs).catch(() => {});
+    load();
+    const i = setInterval(load, 4000);
+    return () => clearInterval(i);
+  }, [tab, active?.id, logFilter]);
 
   useEffect(() => {
     let active = true;
@@ -55,8 +67,12 @@ export default function AdminPage() {
   return (
     <div className="page-scroll"><div className="page-inner">
       <SectionHeader title="Platform Admin" subtitle="Real metrics aggregated from this database" />
-      <Tabs tabs={[{ id: 'overview', label: 'Overview' }, { id: 'users', label: 'Users' }, { id: 'tenants', label: 'Tenants' }]}
-        active={tab} onChange={setTab} style={{ marginBottom: 20 }} />
+      <Tabs tabs={[
+        { id: 'overview', label: 'Overview' },
+        { id: 'users', label: 'Users' },
+        { id: 'tenants', label: 'Tenants' },
+        { id: 'audit', label: 'Audit log' },
+      ]} active={tab} onChange={setTab} style={{ marginBottom: 20 }} />
 
       {tab === 'overview' && <>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 12, marginBottom: 24 }}>
@@ -134,6 +150,37 @@ export default function AdminPage() {
               ))}
             </tbody>
           </table>
+        </GlassPanel>
+      )}
+      {tab === 'audit' && (
+        <GlassPanel style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: 'var(--text-2)' }}>Live audit log · auto-refresh 4s</span>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+              {['all', 'info', 'warn', 'error', 'debug'].map((l) => (
+                <button key={l} onClick={() => setLogFilter(l)} className="btn btn-sm" style={{
+                  padding: '2px 8px', fontSize: 10, textTransform: 'uppercase',
+                  background: logFilter === l ? 'var(--accent-dim)' : 'var(--bg-3)',
+                  color: logFilter === l ? 'var(--accent)' : 'var(--text-3)',
+                }}>{l}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{ maxHeight: 600, overflowY: 'auto', fontFamily: 'var(--mono)', fontSize: 11, padding: '8px 16px' }}>
+            {logs.length === 0 ? (
+              <div style={{ color: 'var(--text-3)', padding: 16 }}>No events.</div>
+            ) : logs.map((l) => {
+              const color = l.level === 'error' ? '#ef4444' : l.level === 'warn' ? '#f59e0b' : l.level === 'debug' ? 'var(--accent2)' : 'var(--text-3)';
+              return (
+                <div key={l.id} style={{ display: 'flex', gap: 12, padding: '2px 0', lineHeight: 1.8 }}>
+                  <span style={{ color: 'var(--text-3)', flexShrink: 0, width: 140 }}>{l.occurred_at}</span>
+                  <span style={{ width: 44, flexShrink: 0, textTransform: 'uppercase', fontWeight: 600, color }}>{l.level}</span>
+                  <span style={{ width: 100, flexShrink: 0, color: 'var(--accent)' }}>{l.service}</span>
+                  <span style={{ color: 'var(--text-1)', minWidth: 0, wordBreak: 'break-word' }}>{l.message}</span>
+                </div>
+              );
+            })}
+          </div>
         </GlassPanel>
       )}
     </div></div>
